@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vdb name="Co" version="1">
+<description/>
+<property name="validationDateTime" value="Wed Feb 13 23:31:48 EST 2019"/>
+<property name="validationVersion" value="8.12.11"/>
+<model name="Countries_VBL" type="VIRTUAL">
+<property name="imports" value="Countries"/>
+<metadata type="DDL"><![CDATA[
+
+CREATE VIEW countries (
+	Index biginteger(10) NOT NULL OPTIONS(NAMEINSOURCE 'Index', NATIVE_TYPE 'biginteger', UPDATABLE 'FALSE'),
+	Country string(4000) OPTIONS(NAMEINSOURCE 'Country', UPDATABLE 'FALSE'),
+	"Month" string(4000) OPTIONS(NAMEINSOURCE '"Month"', UPDATABLE 'FALSE'),
+	HarvestYear biginteger(10) OPTIONS(NAMEINSOURCE 'HarvestYear', UPDATABLE 'FALSE'),
+	CONSTRAINT index_pk PRIMARY KEY(Index)
+) 
+AS
+	SELECT A.Index, A.Country, A."Month", A.HarvestYear FROM (EXEC Countries.getTextFiles('data-100000-index.txt')) AS f, TEXTTABLE(f.file COLUMNS Index biginteger, Country string, "Month" string, HarvestYear biginteger HEADER) AS A;
+
+]]></metadata>
+</model>
+<model name="Countries">
+<source connection-jndi-name="java:/Countries_DS" name="Countries" translator-name="file"/>
+<metadata type="DDL"><![CDATA[
+
+CREATE FOREIGN PROCEDURE getTextFiles (
+	IN pathAndExt string(4000) NOT NULL
+) RETURNS
+	TABLE (
+		file clob,
+		filePath string(4000),
+		lastModified timestamp,
+		created timestamp,
+		size integer
+) OPTIONS(UPDATECOUNT '1');
+
+]]></metadata>
+</model>
+</vdb>
