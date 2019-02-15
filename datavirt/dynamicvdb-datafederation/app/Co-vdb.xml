@@ -28,10 +28,7 @@ CREATE FOREIGN PROCEDURE getTextFiles (
 ) RETURNS
 	TABLE (
 		file clob,
-		filePath string(4000),
-		lastModified timestamp,
-		created timestamp,
-		size integer
+		filePath string(4000)
 ) OPTIONS(UPDATECOUNT '1');
 
 ]]></metadata>
